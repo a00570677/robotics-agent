@@ -1,49 +1,30 @@
 package team39.technical;
 
-import lejos.hardware.motor.*;
-import lejos.hardware.port.*;
 import lejos.hardware.Button;
 
-public class LineFollower {
+public class LineFollower extends Robot {
 	private PID controller;
-	private EV3LargeRegulatedMotor mLeft;
-	private EV3LargeRegulatedMotor mRight;
-	private ColorSensor colorSensor;
-	private GyroSensor gyroSensor;
 
 	public LineFollower() {
-		colorSensor = new ColorSensor(SensorPort.S1);
-		gyroSensor = new GyroSensor(SensorPort.S2);
-		mLeft = new EV3LargeRegulatedMotor(MotorPort.D);
-		mRight = new EV3LargeRegulatedMotor(MotorPort.A);
+		super(ColorSensor.Mode.RED);
 		calibrate();
 	}
 
 	public void run() {
-		System.out.println("Press button to run.");
-		Button.waitForAnyPress();
-		System.out.println("Running...");
+		confirm();
 		float turn, powerLeft, powerRight;
 		while (Button.ENTER.isUp()) {
 			turn = controller.getTurn(colorSensor.getSample());
+			System.out.println(turn);
 			powerLeft = PID.TARGET_POWER + turn;
 			powerRight = PID.TARGET_POWER - turn;
 			advance(powerLeft, powerRight);
 		}
 	}
 
-	private void advance(float powerLeft, float powerRight) {
-		mLeft.setSpeed(powerLeft);
-		mRight.setSpeed(powerRight);
-		mLeft.forward();
-		mRight.forward();
-	}
-
 	private void calibrate() {
 		calibrateColor();
 		calibrateGyro();
-		System.out.println("Press button to start.");
-		Button.waitForAnyPress();
 	}
 
 	private void calibrateColor() {
@@ -63,13 +44,5 @@ public class LineFollower {
 		Button.waitForAnyPress();
 		gyroSensor.reset();
 		System.out.println("Gyro sensor calibrated.");
-	}
-
-	private float getColor() {
-		float colorValue = 0;
-		while (Button.ENTER.isUp()) {
-			colorValue = colorSensor.getSample();
-		}
-		return colorValue;
 	}
 }

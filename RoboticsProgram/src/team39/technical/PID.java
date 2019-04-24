@@ -2,14 +2,12 @@ package team39.technical;
 
 public class PID {
 
-	static final float TARGET_POWER = 50;
+	static final float TARGET_POWER = 80;
 	private float blackColor;
 	private float whiteColor;
 	private float averageColor;
 	private float proportionalK;
-	private float integralK;
 	private float derivativeK;
-	private float integral;
 	private float lastError;
 
 	public PID(float blackColor, float whiteColor, float averageColor) {
@@ -17,9 +15,7 @@ public class PID {
 		this.whiteColor = whiteColor;
 		this.averageColor = averageColor;
 		proportionalK = getProportionalityConstant();
-		integralK = getIntegralConstant();
 		derivativeK = getDerivativeConstant();
-		integral = 0;
 		lastError = 0;
 	}
 
@@ -27,31 +23,20 @@ public class PID {
 		return sample - averageColor;
 	}
 
-	// RECHECK
 	private float getProportionalityConstant() {
-		// float errorWhite = whiteColor - averageColor;
+		float errorWhite = whiteColor - averageColor;
 		float errorBlack = blackColor - averageColor;
-		float slope = TARGET_POWER / errorBlack; // what to divide?
-		return slope;
+		float slope = TARGET_POWER / errorWhite; // what to divide?
+		System.out.println(slope);
+		return slope*5f;
 	}
-
-	// RECHECK
-	private float getIntegralConstant() {
-		return proportionalK / 10;
-	}
-
-	// RECHECK
+	
 	private float getDerivativeConstant() {
-		return proportionalK * 10;
+		return 0;
 	}
 
 	private float getPTerm(float error) {
 		return proportionalK * error;
-	}
-
-	private float getITerm(float error) {
-		integral = integral + error;
-		return integralK * integral;
 	}
 
 	private float getDTerm(float error) {
@@ -62,6 +47,6 @@ public class PID {
 
 	public float getTurn(float sample) {
 		float error = getError(sample);
-		return getPTerm(error) + getITerm(error) + getDTerm(error);
+		return getPTerm(error) + getDTerm(error);
 	}
 }

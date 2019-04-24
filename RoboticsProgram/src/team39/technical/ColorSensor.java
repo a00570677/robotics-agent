@@ -5,13 +5,17 @@ import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.robotics.SampleProvider;
 
 public class ColorSensor {
+	static enum Mode {COLORS, RED};
 	private EV3ColorSensor colorSensor;
 	private SampleProvider provider;
 	private float[] sample;
 	
-	public ColorSensor(Port port) {
+	public ColorSensor(Port port, Mode mode) {
 		colorSensor = new EV3ColorSensor(port);
-		provider = colorSensor.getRedMode();
+		if (mode == Mode.COLORS)
+			provider = colorSensor.getColorIDMode();
+		else if (mode == Mode.RED)
+			provider = colorSensor.getRedMode();
 		sample = new float[provider.sampleSize()];
 	}
 	

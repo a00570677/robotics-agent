@@ -23,8 +23,7 @@ public abstract class Robot {
 	abstract void run();
 	
 	protected void advance(float powerLeft, float powerRight) {
-		mLeft.stop();
-		mRight.stop();
+		stop();
 		mLeft.setSpeed(powerLeft);
 		mRight.setSpeed(powerRight);
 		mLeft.forward();
@@ -33,6 +32,11 @@ public abstract class Robot {
 	
 	protected void advance(float power) {
 		advance(power, power);
+	}
+	
+	protected void stop() {
+		mLeft.stop();
+		mRight.stop();
 	}
 	
 	protected void killBehavior() {

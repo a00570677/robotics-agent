@@ -3,6 +3,8 @@ package team39.technical;
 import lejos.hardware.Button;
 
 public class LineFollower extends Robot {
+	
+	private final float POWER = 80;
 	private PID controller;
 
 	public LineFollower() {
@@ -16,8 +18,8 @@ public class LineFollower extends Robot {
 		while (Button.ENTER.isUp()) {
 			turn = controller.getTurn(colorSensor.getSample());
 			System.out.println(turn);
-			powerLeft = PID.TARGET_POWER + turn;
-			powerRight = PID.TARGET_POWER - turn;
+			powerLeft = POWER + turn;
+			powerRight = POWER - turn;
 			advance(powerLeft, powerRight);
 		}
 	}
@@ -36,7 +38,7 @@ public class LineFollower extends Robot {
 		System.out.println("Value of black : " + blackColor);
 		float averageColor = (whiteColor + blackColor) / 2;
 		System.out.println("Average: " + averageColor);
-		controller = new PID(blackColor, whiteColor, averageColor);
+		controller = new PID(blackColor, whiteColor, averageColor, POWER);
 	}
 
 	private void calibrateGyro() {

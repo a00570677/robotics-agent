@@ -2,37 +2,36 @@ package team39.technical;
 
 public class PID {
 
-	static final float TARGET_POWER = 80;
-	private float blackColor;
-	private float whiteColor;
-	private float averageColor;
+	private final float TARGET_POWER;
+	private final float BLACK_COLOR;
+	private final float WHITE_COLOR;
+	private final float AVERAGE_COLOR;
 	private float proportionalK;
 	private float derivativeK;
 	private float lastError;
 
-	public PID(float blackColor, float whiteColor, float averageColor) {
-		this.blackColor = blackColor;
-		this.whiteColor = whiteColor;
-		this.averageColor = averageColor;
+	public PID(float blackColor, float whiteColor, float averageColor, float power) {
+		BLACK_COLOR = blackColor;
+		WHITE_COLOR = whiteColor;
+		AVERAGE_COLOR = averageColor;
+		TARGET_POWER = power;
 		proportionalK = getProportionalityConstant();
 		derivativeK = getDerivativeConstant();
 		lastError = 0;
 	}
 
 	private float getError(float sample) {
-		return sample - averageColor;
+		return sample - AVERAGE_COLOR;
 	}
 
 	private float getProportionalityConstant() {
-		float errorWhite = whiteColor - averageColor;
-		float errorBlack = blackColor - averageColor;
-		float slope = TARGET_POWER / errorWhite; // what to divide?
-		System.out.println(slope);
-		return slope*5f;
+		float maxError = BLACK_COLOR - AVERAGE_COLOR;
+		float slope = TARGET_POWER / maxError;
+		return slope * 0.8f;
 	}
 	
 	private float getDerivativeConstant() {
-		return 0;
+		return proportionalK * 1.5f / (8 * 0.015f);
 	}
 
 	private float getPTerm(float error) {

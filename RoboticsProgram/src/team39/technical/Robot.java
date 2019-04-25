@@ -14,20 +14,33 @@ public abstract class Robot {
 	protected GyroSensor gyroSensor;
 	
 	public Robot(Mode mode) {
-		colorSensor = new ColorSensor(SensorPort.S1, ColorSensor.Mode.COLORS);
+		colorSensor = new ColorSensor(SensorPort.S1, mode);
 		gyroSensor = new GyroSensor(SensorPort.S2);
 		mLeft = new EV3LargeRegulatedMotor(MotorPort.D);
 		mRight = new EV3LargeRegulatedMotor(MotorPort.A);
 	}
 	
-	abstract void run();
+	public abstract void run();
 	
 	protected void advance(float powerLeft, float powerRight) {
-		stop();
 		mLeft.setSpeed(powerLeft);
 		mRight.setSpeed(powerRight);
 		mLeft.forward();
 		mRight.forward();
+	}
+	
+	protected void rotate(float power, boolean clock) {
+		mLeft.setSpeed(power);
+		mRight.setSpeed(power);
+		if (clock) {
+			mLeft.forward();
+			mRight.backward();
+		}
+		else {
+			mLeft.backward();
+			mRight.forward();
+		}
+		
 	}
 	
 	protected void advance(float power) {

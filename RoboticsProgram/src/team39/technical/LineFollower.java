@@ -4,7 +4,7 @@ import lejos.hardware.Button;
 
 public class LineFollower extends Robot {
 	
-	private final float POWER = 80;
+	private final float POWER = 200;
 	private PID controller;
 
 	public LineFollower() {
@@ -18,9 +18,16 @@ public class LineFollower extends Robot {
 		while (Button.ENTER.isUp()) {
 			turn = controller.getTurn(colorSensor.getSample());
 			System.out.println(turn);
-			powerLeft = POWER + turn;
-			powerRight = POWER - turn;
-			advance(powerLeft, powerRight);
+			if (turn > 130)
+				rotate(POWER, true);
+			else if (turn < -130)
+				rotate(POWER, false);
+			else {
+				powerLeft = POWER + turn;
+				powerRight = POWER - turn;
+				advance(powerLeft, powerRight);
+				//advance(POWER);
+			}
 		}
 	}
 

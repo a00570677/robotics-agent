@@ -6,7 +6,7 @@ import lejos.robotics.Color;
 import lejos.robotics.SampleProvider;
 
 public class ColorSensor {
-	static enum Mode {COLORS, RED};
+	static enum Mode {COLORS, RED, RGB};
 	private EV3ColorSensor colorSensor;
 	private SampleProvider provider;
 	private float[] sample;

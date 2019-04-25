@@ -27,11 +27,11 @@ public class PID {
 	private float getProportionalityConstant() {
 		float maxError = BLACK_COLOR - AVERAGE_COLOR;
 		float slope = TARGET_POWER / maxError;
-		return slope * 0.8f;
+		return slope;
 	}
 	
 	private float getDerivativeConstant() {
-		return proportionalK * 1.5f / (8 * 0.015f);
+		return 0;
 	}
 
 	private float getPTerm(float error) {

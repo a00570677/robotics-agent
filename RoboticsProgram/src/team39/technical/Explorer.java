@@ -22,7 +22,7 @@ public class Explorer extends Robot {
 			case 2:
 				romanticBehavior();
 				break;
-			case 5:
+			case 0:
 				killBehavior();
 				break;
 			case 6:
@@ -33,13 +33,14 @@ public class Explorer extends Robot {
 		}
 	}
 	
-	private void avoidEdge() {
+	public void avoidEdge() {
 		// CHECK GYRO SENSOR
 		stop();
 		gyroSensor.reset();
 		int angle = (new Random()).nextInt(20) + 170;
-		while(gyroSensor.getSample() != angle) {
-			advance(POWER, -POWER);
+		//int angle = 180;
+		while(gyroSensor.getSample() < angle && Button.ENTER.isUp()) {
+			rotate(POWER, true);
 		}
 		stop();
 	}

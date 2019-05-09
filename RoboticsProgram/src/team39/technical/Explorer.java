@@ -5,8 +5,8 @@ import java.util.Random;
 import lejos.hardware.Button;
 
 public class Explorer extends Robot {
-	
-	private final float POWER = 80;
+
+	private final float POWER = 150;
 
 	public Explorer() {
 		super(ColorSensor.Mode.COLORS);
@@ -14,8 +14,8 @@ public class Explorer extends Robot {
 
 	public void run() {
 		confirm();
-		// CHECK COLOR SENSOR
 		while (Button.ENTER.isUp()) {
+			float offset = 0, change = 1;
 			int color = (int) colorSensor.getSample();
 			System.out.println(color);
 			switch (color) {
@@ -29,19 +29,18 @@ public class Explorer extends Robot {
 				avoidEdge();
 				break;
 			}
-			advance(POWER);
+			advance(POWER + offset, POWER - offset);
+			if (offset >= POWER || offset <= 0)
+				change *= -1;
+			offset += change;
 		}
+		stop();
 	}
-	
-	public void avoidEdge() {
-		// CHECK GYRO SENSOR
+
+	private void avoidEdge() {
 		stop();
 		gyroSensor.reset();
 		int angle = (new Random()).nextInt(20) + 170;
-		//int angle = 180;
-		while(gyroSensor.getSample() < angle && Button.ENTER.isUp()) {
-			rotate(POWER, true);
-		}
-		stop();
+		rotateUntilAngle(angle, POWER);
 	}
 }

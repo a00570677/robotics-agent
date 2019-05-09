@@ -1,11 +1,13 @@
 package team39;
 
-import team39.technical.LineFollower;
+import team39.challenges.*;
 
 public class Main {
-	static LineFollower robot;
+	static Challenge1 challenge1;
+	static Challenge3 challenge3;
+	
 	public static void main(String[] args) {
-		robot = new LineFollower();
-		robot.run();
+		challenge1.run();
+		challenge3.run();
 	}
 }

@@ -4,15 +4,13 @@ public class PID {
 
 	private final float TARGET_POWER;
 	private final float BLACK_COLOR;
-	private final float WHITE_COLOR;
 	private final float AVERAGE_COLOR;
 	private float proportionalK;
 	private float derivativeK;
 	private float lastError;
 
-	public PID(float blackColor, float whiteColor, float averageColor, float power) {
+	public PID(float blackColor, float averageColor, float power) {
 		BLACK_COLOR = blackColor;
-		WHITE_COLOR = whiteColor;
 		AVERAGE_COLOR = averageColor;
 		TARGET_POWER = power;
 		proportionalK = getProportionalityConstant();
@@ -29,7 +27,7 @@ public class PID {
 		float slope = TARGET_POWER / maxError;
 		return slope;
 	}
-	
+
 	private float getDerivativeConstant() {
 		return 0;
 	}

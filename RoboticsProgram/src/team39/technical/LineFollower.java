@@ -4,36 +4,31 @@ import lejos.hardware.Button;
 
 public class LineFollower extends Robot {
 
-	public final float POWER = 200;
+	public final float POWER;
 	public final float TURN_TRESHOLD = 130;
-	private float initialAngle;
+	public float redColor, blueColor;
 	private PID controller;
 
-	public LineFollower() {
+	public LineFollower(boolean withColors, float power) {
 		super(ColorSensor.Mode.RED);
-		calibrate();
-	}
-
-	public double getInitialAngle() {
-		return initialAngle;
+		POWER  = power;
+		calibrate(withColors);
 	}
 
 	public void changeLane() {
-		rotateUntilAngle(-30, POWER);
-		boolean check1 = false, check2 = false;
-		while (!check2) {
-			float turn = controller.getTurn(colorSensor.getSample());
-			if (turn > TURN_TRESHOLD)
-				check1 = true;
-			else if (check1 && turn < -TURN_TRESHOLD)
-				check2 = true;
-			advance(POWER);
-		}
+		rotateUntilAngle(45, POWER);
 		stop();
 	}
 
 	public void run() {
 		run(true);
+	}
+	
+
+	public void approach() {
+		while(colorSensor.getSample() < controller.WHITE_COLOR && Button.ENTER.isUp())
+			advance(POWER);
+		stop();
 	}
 
 	public void run(boolean right) {
@@ -53,18 +48,25 @@ public class LineFollower extends Robot {
 	}
 
 	public void runUntilAngle(float angle, boolean right) {
-		while (Button.ENTER.isUp() && getAngle() > angle) {
+		while (Button.ENTER.isUp() && getAngle() < angle) {
 			run(right);
 		}
 		resetGyro();
 	}
+	
+	public void runUntilBlue() {
+		while (Button.ENTER.isUp() && colorSensor.getSample() < blueColor + 10 && colorSensor.getSample() > blueColor - 10 ) {
+			advance(POWER);
+		}
+		stop();
+	}
 
-	private void calibrate() {
-		calibrateColor();
+	private void calibrate(boolean withColors) {
+		calibrateColor(withColors);
 		calibrateGyro();
 	}
 
-	private void calibrateColor() {
+	private void calibrateColor(boolean withColors) {
 		System.out.println("Press for white color...");
 		float whiteColor = getColor();
 		System.out.println("Value of white : " + whiteColor);
@@ -73,16 +75,20 @@ public class LineFollower extends Robot {
 		System.out.println("Value of black : " + blackColor);
 		float averageColor = (whiteColor + blackColor) / 2;
 		System.out.println("Average: " + averageColor);
-		controller = new PID(blackColor, averageColor, POWER);
+		if (withColors) {
+			System.out.println("Press for red color...");
+			redColor = getColor();
+			System.out.println("Value of red : " + redColor);
+			System.out.println("Press for blue color...");
+			blueColor = getColor();
+			System.out.println("Value of blue : " + blueColor);
+		}
+		controller = new PID(blackColor, whiteColor, averageColor, POWER);
 	}
 
 	private void calibrateGyro() {
-		System.out.println("Press for orientation angle...");
-		Button.waitForAnyPress();
-		gyroSensor.reset();
 		System.out.println("Press for initial angle...");
 		Button.waitForAnyPress();
-		initialAngle = getAngle();
 		gyroSensor.reset();
 		System.out.println("Gyro sensor calibrated.");
 	}

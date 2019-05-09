@@ -14,8 +14,8 @@ public class Explorer extends Robot {
 
 	public void run() {
 		confirm();
+		float offset = 0, change = 1;
 		while (Button.ENTER.isUp()) {
-			float offset = 0, change = 1;
 			int color = (int) colorSensor.getSample();
 			System.out.println(color);
 			switch (color) {
@@ -36,11 +36,18 @@ public class Explorer extends Robot {
 		}
 		stop();
 	}
+	
 
 	private void avoidEdge() {
 		stop();
 		gyroSensor.reset();
 		int angle = (new Random()).nextInt(20) + 170;
 		rotateUntilAngle(angle, POWER);
+	}
+	
+	public void print() {
+		resetGyro();
+		while(Button.ENTER.isUp())
+			System.out.println(getAngle());
 	}
 }

@@ -4,11 +4,13 @@ import team39.technical.LineFollower;
 
 public class Challenge1 {
 	LineFollower robot;
-	private final float GRID_ANGLE1 = -360;
-	private final float GRID_ANGLE2 = -180;
+	private final float GRID_ANGLE1 = 360;
+	private final float GRID_ANGLE2 = 180;
+	private final float DISTANCE = 150;
+	private final float POWER = 200;
 
 	public Challenge1() {
-		robot = new LineFollower();
+		robot = new LineFollower(true, POWER);
 	}
 
 	public void run() {
@@ -19,17 +21,17 @@ public class Challenge1 {
 	}
 
 	private void gridTask() {
-		robot.runUntilAngle(GRID_ANGLE1, true);
+		robot.approach();
+		robot.runUntilAngle(GRID_ANGLE1, false);
 		robot.changeLane();
-		robot.runUntilAngle(GRID_ANGLE2, false);
-		robot.rotateUntilAngle(-robot.getInitialAngle() + 180, robot.POWER);
+		robot.runUntilAngle(GRID_ANGLE2, true);
 	}
 
 	private void findPole() {
-
+		robot.rotateUntilDistance(DISTANCE, robot.POWER);
+		robot.runUntilBlue();
 	}
 
 	private void mazeTask() {
-
 	}
 }

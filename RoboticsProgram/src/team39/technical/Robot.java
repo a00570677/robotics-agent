@@ -12,10 +12,13 @@ public abstract class Robot {
 	protected EV3LargeRegulatedMotor mRight;
 	protected ColorSensor colorSensor;
 	protected GyroSensor gyroSensor;
+	protected DistanceSensor distanceSensor;
 
 	public Robot(Mode mode) {
-		colorSensor = new ColorSensor(SensorPort.S1, mode);
-		gyroSensor = new GyroSensor(SensorPort.S2);
+		colorSensor = new ColorSensor(SensorPort.S3, mode);
+		gyroSensor = new GyroSensor(SensorPort.S4);
+		distanceSensor = new DistanceSensor(SensorPort.S2);
+		
 		mLeft = new EV3LargeRegulatedMotor(MotorPort.D);
 		mRight = new EV3LargeRegulatedMotor(MotorPort.A);
 	}
@@ -36,13 +39,21 @@ public abstract class Robot {
 	public void rotateUntilAngle(double angle, float power) {
 		if (angle >= 0) {
 			while (gyroSensor.getSample() < angle && Button.ENTER.isUp()) {
-				rotate(power, true);
+				System.out.println(getAngle());
+				rotate(power, false);
 			}
 		} else {
 			while (gyroSensor.getSample() > angle && Button.ENTER.isUp()) {
-				rotate(power, false);
+				System.out.println(getAngle());
+				rotate(power, true);
 			}
 		}
+		stop();
+	}
+	
+	public void rotateUntilDistance(float distance, float power) {
+		while(Button.ENTER.isUp() && getDistance() > distance)
+			rotate(power, false);
 		stop();
 	}
 
@@ -90,6 +101,10 @@ public abstract class Robot {
 
 	protected float getAngle() {
 		return gyroSensor.getSample();
+	}
+	
+	protected float getDistance() {
+		return distanceSensor.getSample();
 	}
 
 	public void confirm() {

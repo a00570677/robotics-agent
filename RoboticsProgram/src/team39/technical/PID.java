@@ -3,14 +3,15 @@ package team39.technical;
 public class PID {
 
 	private final float TARGET_POWER;
-	private final float BLACK_COLOR;
+	public final float BLACK_COLOR, WHITE_COLOR;
 	private final float AVERAGE_COLOR;
 	private float proportionalK;
 	private float derivativeK;
 	private float lastError;
 
-	public PID(float blackColor, float averageColor, float power) {
+	public PID(float blackColor, float whiteColor, float averageColor, float power) {
 		BLACK_COLOR = blackColor;
+		WHITE_COLOR = whiteColor;
 		AVERAGE_COLOR = averageColor;
 		TARGET_POWER = power;
 		proportionalK = getProportionalityConstant();

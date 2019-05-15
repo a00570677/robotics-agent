@@ -5,7 +5,10 @@ import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.*;
 import lejos.utility.Delay;
-import team39.technical.ColorSensor.Mode;
+import team39.technical.sensors.ColorSensor;
+import team39.technical.sensors.DistanceSensor;
+import team39.technical.sensors.GyroSensor;
+import team39.technical.sensors.ColorSensor.Mode;
 
 public abstract class Robot {
 	protected EV3LargeRegulatedMotor mLeft;
@@ -36,15 +39,13 @@ public abstract class Robot {
 		advance(power, power);
 	}
 
-	public void rotateUntilAngle(double angle, float power) {
+	protected void rotateUntilAngle(double angle, float power) {
 		if (angle >= 0) {
 			while (gyroSensor.getSample() < angle && Button.ENTER.isUp()) {
-				System.out.println(getAngle());
 				rotate(power, false);
 			}
 		} else {
 			while (gyroSensor.getSample() > angle && Button.ENTER.isUp()) {
-				System.out.println(getAngle());
 				rotate(power, true);
 			}
 		}
@@ -82,20 +83,23 @@ public abstract class Robot {
 	protected void killBehavior() {
 		stop();
 		Sound.systemSound(false, 2);
-		Delay.msDelay(4000);
+		Delay.msDelay(2000);
 	}
 
 	protected void romanticBehavior() {
 		stop();
 		Sound.systemSound(false, 3);
-		Delay.msDelay(4000);
+		Delay.msDelay(2000);
 	}
 
-	protected float getColor() {
+	protected float getColor(String color) {
+		System.out.println("Press for " + color + " color...");
 		float colorValue = 0;
 		while (Button.ENTER.isUp()) {
 			colorValue = colorSensor.getSample();
 		}
+		System.out.println("Value of " + color + " : " + colorValue);
+		Delay.msDelay(500);
 		return colorValue;
 	}
 
@@ -112,6 +116,7 @@ public abstract class Robot {
 		Button.waitForAnyPress();
 		System.out.println("Running...");
 		Delay.msDelay(1000);
+		gyroSensor.reset();
 	}
 
 }

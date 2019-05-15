@@ -7,7 +7,7 @@ public class Challenge1 {
 	private final float GRID_ANGLE1 = 360;
 	private final float GRID_ANGLE2 = 180;
 	private final float DISTANCE = 150;
-	private final float POWER = 200;
+	private final float POWER = 400;
 
 	public Challenge1() {
 		robot = new LineFollower(true, POWER);
@@ -33,5 +33,6 @@ public class Challenge1 {
 	}
 
 	private void mazeTask() {
+		//TODAY
 	}
 }

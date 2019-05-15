@@ -3,51 +3,47 @@ package team39.technical;
 import java.util.Random;
 
 import lejos.hardware.Button;
+import team39.technical.sensors.ColorSensor;
 
 public class Explorer extends Robot {
 
 	private final float POWER = 150;
+	public int whiteColor, redColor, blueColor;
 
 	public Explorer() {
-		super(ColorSensor.Mode.COLORS);
+		super(ColorSensor.Mode.RED);
+		calibrateColor();
 	}
 
 	public void run() {
 		confirm();
-		float offset = 0, change = 1;
+		float offset = POWER/2, count = 0;
 		while (Button.ENTER.isUp()) {
 			int color = (int) colorSensor.getSample();
-			System.out.println(color);
-			switch (color) {
-			case 2:
+			if (color == blueColor)
 				romanticBehavior();
-				break;
-			case 0:
+			else if (color == redColor)
 				killBehavior();
-				break;
-			case 6:
+			else if (color == whiteColor)
 				avoidEdge();
-				break;
-			}
 			advance(POWER + offset, POWER - offset);
-			if (offset >= POWER || offset <= 0)
-				change *= -1;
-			offset += change;
+			if (count%20==0)
+				offset *= -1;
+			count++;
 		}
 		stop();
 	}
 	
-
 	private void avoidEdge() {
 		stop();
 		gyroSensor.reset();
-		int angle = (new Random()).nextInt(20) + 170;
+		int angle = (new Random()).nextInt(30) + 160;
 		rotateUntilAngle(angle, POWER);
 	}
 	
-	public void print() {
-		resetGyro();
-		while(Button.ENTER.isUp())
-			System.out.println(getAngle());
+	private void calibrateColor() {
+		whiteColor = (int) getColor("white");
+		redColor = (int) getColor("red");
+		blueColor = (int) getColor("blue");
 	}
 }

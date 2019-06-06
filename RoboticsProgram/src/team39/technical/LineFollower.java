@@ -6,18 +6,23 @@ import team39.technical.sensors.ColorSensor;
 public class LineFollower extends Robot {
 
 	public final float POWER;
-	public final float TURN_TRESHOLD = 130;
-	public float redColor, blueColor;
+	public final float TURN_TRESHOLD;
+	public final int BLUE_ID = 1, RED_ID = 13;
+	public float redColor, blueColor, initialAngle;
 	private PID controller;
 
-	public LineFollower(boolean withColors, float power) {
+	public LineFollower(float power, float treshold) {
 		super(ColorSensor.Mode.RED);
-		POWER  = power;
-		calibrateColor(withColors);
+		POWER = power;
+		TURN_TRESHOLD = treshold;
+		calibrate();
 	}
-	
-	public void approach() {
-		while(colorSensor.getSample() < controller.WHITE_COLOR && Button.ENTER.isUp())
+
+	// MOVING METHODS
+	// ----------------------------------------------------------------------------------
+
+	public void approachLine() {
+		while (colorSensor.getSample() < controller.AVERAGE_COLOR && Button.ENTER.isUp())
 			advance(POWER);
 		stop();
 	}
@@ -28,22 +33,23 @@ public class LineFollower extends Robot {
 	}
 
 	public void run() {
-		run(false);
+		while (Button.ENTER.isUp())
+			run(false);
 	}
 
 	private void run(boolean left) {
 		float turn;
-		float powerLeft, powerRight;
+		// float powerLeft, powerRight;
 		turn = controller.getTurn(colorSensor.getSample());
 		if (turn > TURN_TRESHOLD)
 			rotate(POWER, left);
 		else if (turn < -TURN_TRESHOLD)
 			rotate(POWER, !left);
 		else {
-			powerLeft = POWER + turn;
-			powerRight = POWER - turn;
-			advance(powerLeft, powerRight);
-			//advance(POWER);
+			// powerLeft = POWER + turn;
+			// powerRight = POWER - turn;
+			// advance(powerLeft, powerRight);
+			advance(POWER);
 		}
 	}
 
@@ -54,22 +60,52 @@ public class LineFollower extends Robot {
 		resetGyro();
 	}
 	
-	public void runUntilBlue() {
-		while (Button.ENTER.isUp() && colorSensor.getSample() < blueColor + 10 && colorSensor.getSample() > blueColor - 10 ) {
-			advance(POWER);
+	public void runUntilDistance(float distance, boolean left) {
+		while (Button.ENTER.isUp() && getDistance() > distance) {
+			run(left);
 		}
 		stop();
 	}
 
-	private void calibrateColor(boolean withColors) {
+	public void runUntilBlue() {
+		while (Button.ENTER.isUp() && colorSensor.getSample() != BLUE_ID) {
+			advance(POWER);
+		}
+		stop();
+	}
+	
+	public boolean runUntilColor() {
+		while (Button.ENTER.isUp() && colorSensor.getSample() != BLUE_ID && colorSensor.getSample() != RED_ID) {
+			advance(POWER);
+		}
+		stop();
+		return (int) colorSensor.getSample() == RED_ID;
+	}
+	
+	// CALIBRATION METHODS
+	// ----------------------------------------------------------------------------------
+
+	private void calibrate() {
+		calibrateColor();
+		calibrateGyro();
+	}
+
+	private void calibrateColor() {
 		float whiteColor = getColor("white");
 		float blackColor = getColor("black");
 		float averageColor = (whiteColor + blackColor) / 2;
 		System.out.println("Average: " + averageColor);
-		if (withColors) {
-			redColor = getColor("red");
-			blueColor = getColor("blue");
-		}
 		controller = new PID(blackColor, whiteColor, averageColor, POWER);
+	}
+
+	private void calibrateGyro() {
+		System.out.println("Press for orientation angle...");
+		Button.waitForAnyPress();
+		gyroSensor.reset();
+		System.out.println("Press for initial angle...");
+		Button.waitForAnyPress();
+		initialAngle = getAngle();
+		gyroSensor.reset();
+		System.out.println("Gyro sensor calibrated.");
 	}
 }

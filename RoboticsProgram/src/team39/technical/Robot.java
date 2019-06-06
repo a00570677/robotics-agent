@@ -3,6 +3,7 @@ package team39.technical;
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.*;
 import lejos.utility.Delay;
 import team39.technical.sensors.ColorSensor;
@@ -13,20 +14,26 @@ import team39.technical.sensors.ColorSensor.Mode;
 public abstract class Robot {
 	protected EV3LargeRegulatedMotor mLeft;
 	protected EV3LargeRegulatedMotor mRight;
-	protected ColorSensor colorSensor;
+	public ColorSensor colorSensor;
 	protected GyroSensor gyroSensor;
 	protected DistanceSensor distanceSensor;
+	static EV3MediumRegulatedMotor claw;
 
 	public Robot(Mode mode) {
-		colorSensor = new ColorSensor(SensorPort.S3, mode);
-		gyroSensor = new GyroSensor(SensorPort.S4);
+		colorSensor = new ColorSensor(SensorPort.S4, mode);
+		gyroSensor = new GyroSensor(SensorPort.S1);
 		distanceSensor = new DistanceSensor(SensorPort.S2);
-		
+
 		mLeft = new EV3LargeRegulatedMotor(MotorPort.D);
 		mRight = new EV3LargeRegulatedMotor(MotorPort.A);
+		claw = new EV3MediumRegulatedMotor(MotorPort.C);
+		claw.setSpeed(100);
 	}
 
 	public abstract void run();
+
+	// MOVING METHODS
+	// ----------------------------------------------------------------------------------
 
 	protected void advance(float powerLeft, float powerRight) {
 		mLeft.setSpeed(powerLeft);
@@ -35,27 +42,8 @@ public abstract class Robot {
 		mRight.forward();
 	}
 
-	protected void advance(float power) {
+	public void advance(float power) {
 		advance(power, power);
-	}
-
-	protected void rotateUntilAngle(double angle, float power) {
-		if (angle >= 0) {
-			while (gyroSensor.getSample() < angle && Button.ENTER.isUp()) {
-				rotate(power, false);
-			}
-		} else {
-			while (gyroSensor.getSample() > angle && Button.ENTER.isUp()) {
-				rotate(power, true);
-			}
-		}
-		stop();
-	}
-	
-	public void rotateUntilDistance(float distance, float power) {
-		while(Button.ENTER.isUp() && getDistance() > distance)
-			rotate(power, false);
-		stop();
 	}
 
 	protected void rotate(float power, boolean clock) {
@@ -70,26 +58,47 @@ public abstract class Robot {
 		}
 	}
 
-	protected void stop() {
+	public void rotateUntilAngle(double angle, float power) {
+		if (angle >= 0) {
+			while (gyroSensor.getSample() < angle && Button.ENTER.isUp()) {
+				rotate(power, false);
+			}
+		} else {
+			while (gyroSensor.getSample() > angle && Button.ENTER.isUp()) {
+				rotate(power, true);
+			}
+		}
+		stop();
+	}
+
+	public void rotateUntilDistance(float distance, float power) {
+		while (Button.ENTER.isUp() && getDistance() > distance)
+			rotate(power, false);
+		stop();
+	}
+
+	public float seekClosest() {
+		float min = 1000, current;
+		while (gyroSensor.getSample() < 360 && Button.ENTER.isUp()) {
+			rotate(50, false);
+			current = getDistance();
+			if (current < min)
+				min = current;
+		}
+		return min;
+	}
+
+	public void stop() {
 		mLeft.stop();
 		mRight.stop();
 	}
 
+	// SENSOR METHODS
+	// ----------------------------------------------------------------------------------
+
 	protected void resetGyro() {
 		stop();
 		gyroSensor.reset();
-	}
-
-	protected void killBehavior() {
-		stop();
-		Sound.systemSound(false, 2);
-		Delay.msDelay(2000);
-	}
-
-	protected void romanticBehavior() {
-		stop();
-		Sound.systemSound(false, 3);
-		Delay.msDelay(2000);
 	}
 
 	protected float getColor(String color) {
@@ -106,9 +115,56 @@ public abstract class Robot {
 	protected float getAngle() {
 		return gyroSensor.getSample();
 	}
-	
+
 	protected float getDistance() {
 		return distanceSensor.getSample();
+	}
+
+	// CLAW METHODS
+	// ----------------------------------------------------------------------------------
+
+	public void getFood() {
+		if (getDistance() < 5) {
+			closeClaw();
+		}
+	}
+
+	public void closeClaw() {
+		int counter = 0;
+		while (Button.ENTER.isUp() && counter < 7500) {
+			claw.backward();
+			counter++;
+		}
+		claw.stop();
+	}
+
+	public void openClaw() {
+		int counter = 0;
+		while (Button.ENTER.isUp() && counter < 7500) {
+			claw.forward();
+			counter++;
+		}
+		claw.stop();
+	}
+
+	// BEHAVIOUR METHODS
+	// ----------------------------------------------------------------------------------
+
+	protected void killBehavior() {
+		stop();
+		Sound.systemSound(false, 2);
+		Delay.msDelay(2000);
+	}
+
+	protected void romanticBehavior() {
+		stop();
+		Sound.systemSound(false, 3);
+		Delay.msDelay(2000);
+	}
+
+	public void blueBehavior() {
+		Sound.systemSound(false, 3);
+		rotateUntilAngle(360, 300);
 	}
 
 	public void confirm() {

@@ -4,7 +4,7 @@ public class PID {
 
 	private final float TARGET_POWER;
 	public final float BLACK_COLOR, WHITE_COLOR;
-	private final float AVERAGE_COLOR;
+	public final float AVERAGE_COLOR;
 	private float proportionalK;
 	private float derivativeK;
 	private float lastError;

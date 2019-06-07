@@ -77,15 +77,18 @@ public abstract class Robot {
 		stop();
 	}
 
-	public float seekClosest() {
-		float min = 1000, current;
+	public float seekClosestAngle() {
+		resetGyro();
+		float min = 1000, current, angle = 0;
 		while (gyroSensor.getSample() < 360 && Button.ENTER.isUp()) {
 			rotate(50, false);
 			current = getDistance();
-			if (current < min)
+			if (current < min) {
+				angle = getAngle();
 				min = current;
+			}
 		}
-		return min;
+		return angle;
 	}
 
 	public void stop() {
@@ -96,7 +99,7 @@ public abstract class Robot {
 	// SENSOR METHODS
 	// ----------------------------------------------------------------------------------
 
-	protected void resetGyro() {
+	public void resetGyro() {
 		stop();
 		gyroSensor.reset();
 	}
@@ -164,6 +167,7 @@ public abstract class Robot {
 
 	public void blueBehavior() {
 		Sound.systemSound(false, 3);
+		resetGyro();
 		rotateUntilAngle(360, 300);
 	}
 

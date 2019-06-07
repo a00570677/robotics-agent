@@ -53,13 +53,24 @@ public class LineFollower extends Robot {
 		}
 	}
 
+	public void runPID() {
+		while (Button.ENTER.isUp()) {
+			float turn;
+			float powerLeft, powerRight;
+			turn = controller.getTurn(colorSensor.getSample());
+			powerLeft = POWER + turn;
+			powerRight = POWER - turn;
+			advance(powerLeft, powerRight);
+		}
+	}
+
 	public void runUntilAngle(float angle, boolean left) {
 		while (Button.ENTER.isUp() && getAngle() < angle) {
 			run(left);
 		}
 		resetGyro();
 	}
-	
+
 	public void runUntilDistance(float distance, boolean left) {
 		while (Button.ENTER.isUp() && getDistance() > distance) {
 			run(left);
@@ -73,7 +84,7 @@ public class LineFollower extends Robot {
 		}
 		stop();
 	}
-	
+
 	public boolean runUntilColor() {
 		while (Button.ENTER.isUp() && colorSensor.getSample() != BLUE_ID && colorSensor.getSample() != RED_ID) {
 			advance(POWER);
@@ -81,7 +92,7 @@ public class LineFollower extends Robot {
 		stop();
 		return (int) colorSensor.getSample() == RED_ID;
 	}
-	
+
 	// CALIBRATION METHODS
 	// ----------------------------------------------------------------------------------
 

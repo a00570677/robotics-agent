@@ -30,11 +30,13 @@ public class Main {
 		 * - CH1: Check if works fine
 		 * - CH1: Detect red pillar
 		 * 
-		 * - CH2: Adjust PID / Robot / Line Following
+		 * - CH2: Adjust PID / Robot / Line Following  ! leave till the end
 		 * 
 		 * - CH3: Check if works fine
 		 * - CH3: 2 Behaviors
 		 * 
+		 * - CH4: Check if works fine
+		 * - CH4: Implement claw
 		 * - CH4: Complete missing tasks
 		 */
 	}

@@ -8,7 +8,6 @@ public class Challenge1 implements Challenge {
 	LineFollower robot;
 	private final float GRID_ANGLE1 = 350;
 	private final float GRID_ANGLE2 = 170;
-	private final float DISTANCE_TOLERANCE = 10;
 	private final float POWER = 150;
 	private final float TRESHOLD = 120;
 
@@ -40,8 +39,9 @@ public class Challenge1 implements Challenge {
 		robot.rotateUntilAngle(180 - robot.initialAngle, POWER);
 		robot.advance(POWER);
 		Delay.msDelay(12000);
-		float closest = robot.seekClosest();
-		robot.rotateUntilDistance(closest + DISTANCE_TOLERANCE, robot.POWER);
+		float closest = robot.seekClosestAngle();
+		robot.resetGyro();
+		robot.rotateUntilAngle(closest, POWER);
 	}
 
 	private void mazeTask() {

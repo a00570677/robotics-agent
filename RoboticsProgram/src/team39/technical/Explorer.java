@@ -22,11 +22,25 @@ public class Explorer extends Robot {
 		stop();
 	}
 
-	private void avoidEdge() {
-		stop();
-		gyroSensor.reset();
+	private void avoidEdge1() {
+		resetGyro();
 		int angle = (new Random()).nextInt(90) + 120;
 		rotateUntilAngle(angle, POWER);
+	}
+	
+	private void avoidEdge() {
+		resetGyro();
+		float angle = rotateUntilBlack();
+		gyroSensor.reset();
+		rotateUntilAngle(angle, POWER);
+	}
+	
+	private float rotateUntilBlack() {
+		while ((int)colorSensor.getSample() == WHITE_ID && Button.ENTER.isUp()) {
+			rotate(POWER, false);
+		}
+		stop();
+		return getAngle();
 	}
 
 	private void subsumptionArch() {

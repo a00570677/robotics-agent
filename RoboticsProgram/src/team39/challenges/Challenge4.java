@@ -7,7 +7,6 @@ import team39.technical.sensors.ColorSensor;
 public class Challenge4 implements Challenge {
 	LineFollower robot;
 	private final float POLE_DISTANCE = 30;
-	private final float DISTANCE_TOLERANCE = 5;
 	private final float POWER = 150;
 	private final float TRESHOLD = 120;
 	private final float ANGLE1 = 180;
@@ -43,15 +42,18 @@ public class Challenge4 implements Challenge {
 	private void selectSide() {
 		robot.colorSensor.setMode(ColorSensor.Mode.COLORS);
 		foodIsLeft = robot.runUntilColor();
+		robot.resetGyro();
 		robot.rotateUntilAngle(180, POWER);
+		robot.resetGyro();
 		robot.colorSensor.setMode(ColorSensor.Mode.RED);
 		robot.approachLine();
 		robot.runUntilAngle(ANGLE1, !foodIsLeft);
 	}
 
 	private void findFood() {
-		float closest = robot.seekClosest();
-		robot.rotateUntilDistance(closest + DISTANCE_TOLERANCE, robot.POWER);
+		float closest = robot.seekClosestAngle();
+		robot.resetGyro();
+		robot.rotateUntilAngle(closest, POWER);
 	}
 
 	private void collectFood() {

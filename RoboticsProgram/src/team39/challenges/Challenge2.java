@@ -12,6 +12,6 @@ public class Challenge2 implements Challenge {
 	}
 
 	public void run() {
-		robot.run();
+		robot.runPID();
 	}
 }
